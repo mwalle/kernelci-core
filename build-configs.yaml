@@ -664,6 +664,47 @@ build_configs:
     branch: 'kernelci.org'
     variants: *stable_variants
 
+  kernelci_staging:
+    tree: kernelci
+    branch: 'staging.kernelci.org'
+    variants:
+      gcc-8:
+        build_environment: gcc-8
+        fragments: ['kselftest']
+        architectures:
+          arc:
+            base_defconfig: 'haps_hs_smp_defconfig'
+            filters:
+              - passlist: {defconfig: ['haps_hs_smp_defconfig']}
+          arm: &staging_arm
+            base_defconfig: 'multi_v7_defconfig'
+            filters:
+              - passlist: {defconfig: ['multi_v7_defconfig']}
+          arm64: &staging_arm64
+            filters:
+              - passlist: {defconfig: ['defconfig']}
+          i386:
+            base_defconfig: 'i386_defconfig'
+            filters:
+              - passlist: {defconfig: ['i386_defconfig']}
+          mips:
+            base_defconfig: '32r2el_defconfig'
+            filters:
+              - passlist: {defconfig: ['32r2el_defconfig']}
+          riscv:
+            filters:
+              - passlist: {defconfig: ['defconfig']}
+          x86_64: &staging_x86_64
+            base_defconfig: 'x86_64_defconfig'
+            filters:
+              - passlist: {defconfig: ['x86_64_defconfig']}
+      clang-9:
+        build_environment: clang-9
+        architectures:
+          arm: *staging_arm
+          arm64: *staging_arm64
+          x86_64: *staging_x86_64
+
   khilman:
     tree: khilman
     branch: 'to-build'
