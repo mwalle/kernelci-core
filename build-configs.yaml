@@ -684,6 +684,8 @@ build_configs:
           arm64: &staging_arm64
             filters:
               - passlist: {defconfig: ['defconfig']}
+            extra_configs:
+              - 'defconfig+CONFIG_CPU_BIG_ENDIAN=y'
           i386:
             base_defconfig: 'i386_defconfig'
             filters:
@@ -703,7 +705,9 @@ build_configs:
         build_environment: clang-10
         architectures:
           arm: *staging_arm
-          arm64: *staging_arm64
+          arm64:
+            extra_configs:
+              - 'defconfig+CONFIG_CPU_BIG_ENDIAN=y'
           x86_64: *staging_x86_64
 
   khilman:
