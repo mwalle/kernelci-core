@@ -745,6 +745,17 @@ build_configs:
   mainline:
     tree: mainline
     branch: 'master'
+    variants:
+      gcc-8:
+        build_environment: gcc-8
+        architectures:
+          arm: *arm_defconfig
+          arm64: *arm64_defconfig
+          x86_64: *x86_64_defconfig
+      clang-9:
+        build_environment: clang-9
+        architectures:
+          arm64: *arm64_defconfig
 
   media:
     tree: media
