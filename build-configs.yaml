@@ -651,6 +651,7 @@ build_configs:
               - passlist: {defconfig: ['defconfig']}
           x86_64: &staging_x86_64
             base_defconfig: 'x86_64_defconfig'
+            fragments: [x86_chromebook]
             filters:
               - passlist: {defconfig: ['x86_64_defconfig']}
       clang-9:
