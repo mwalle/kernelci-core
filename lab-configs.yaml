@@ -5,8 +5,8 @@ labs:
     lab_type: lava
     url: 'https://lava.baylibre.com/RPC2/'
     filters:
-      - blacklist: {tree: [drm-tip]}
-      - whitelist:
+      - blocklist: {tree: [drm-tip]}
+      - passlist:
           plan:
             - baseline
             - baseline-fastboot
@@ -19,8 +19,8 @@ labs:
     lab_type: lava
     url: 'https://lava.ciplatform.org/RPC2'
     filters:
-      - blacklist: {tree: [android]}
-      - whitelist:
+      - blocklist: {tree: [android]}
+      - passlist:
           plan:
             - baseline
 
@@ -28,7 +28,7 @@ labs:
     lab_type: lava
     url: 'https://lava.montjoie.ovh/RPC2/'
     filters:
-      - whitelist:
+      - passlist:
           plan:
             - baseline
             - baseline-nfs
@@ -45,8 +45,8 @@ labs:
     lab_type: lava
     url: 'https://lava.collabora.co.uk/RPC2/'
     filters:
-      - blacklist: {tree: [android]}
-      - whitelist:
+      - blocklist: {tree: [android]}
+      - passlist:
           plan:
             - baseline
             - baseline-nfs
@@ -78,7 +78,7 @@ labs:
             - ['next', 'pending-fixes']
             - ['kernelci', 'kernelci.org']
             - ['kernelci', 'staging.kernelci.org']
-      - whitelist:
+      - passlist:
           plan:
             - baseline
             - baseline-uefi
@@ -87,8 +87,8 @@ labs:
     lab_type: lava
     url: 'http://lava.streamtester.net/RPC2/'
     filters:
-      - blacklist: {tree: ['android', 'drm-tip', 'linaro-android']}
-      - whitelist:
+      - blocklist: {tree: ['android', 'drm-tip', 'linaro-android']}
+      - passlist:
           plan:
             - baseline
             - baseline-nfs
@@ -102,7 +102,7 @@ labs:
     lab_type: lava
     url: 'https://hekla.openlab.pengutronix.de/RPC2/'
     filters:
-      - whitelist:
+      - passlist:
           plan:
             - baseline
 
@@ -110,7 +110,7 @@ labs:
     lab_type: lava
     url: 'https://lava.theobroma-systems.com/RPC2/'
     filters:
-      - whitelist:
+      - passlist:
           plan:
             - baseline
             - kselftest
