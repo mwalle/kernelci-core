@@ -11,6 +11,8 @@ rootfs_configs:
       - mips
       - mipsel
       - mips64el
+    extra_packages:
+      - isc-dhcp-client
     extra_packages_remove:
       - bash
       - e2fslibs
@@ -23,6 +25,7 @@ rootfs_configs:
       - libp11-kit0
       - libunistring2
       - sensible-utils
+      - isc-dhcp-client
     extra_files_remove:
       - '*networkd*'
       - '*resolved*'
