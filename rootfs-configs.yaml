@@ -31,7 +31,8 @@ rootfs_configs:
       - dir
       - partx
       - find
-    script: ""
+    script: "scripts/install-bootrr.sh"
+    test_overlay: "overlay/baseline"
 
   buster-v4l2:
     rootfs_type: debos
