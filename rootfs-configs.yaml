@@ -11,6 +11,8 @@ rootfs_configs:
       - mips
       - mipsel
       - mips64el
+    extra_packages:
+      - isc-dhcp-client
     extra_packages_remove:
       - bash
       - e2fslibs
