@@ -2140,6 +2140,11 @@ test_configs:
       - sleep
       - usb
 
+  - device_type: thunderx
+    test_plans:
+      - baseline
+      - kselftest
+
   - device_type: x86-atom330
     test_plans:
       - baseline
