@@ -1352,6 +1352,14 @@ device_types:
     boot_method: depthcharge
     flags: ['lpae']
 
+  thunderx:
+    mach: sbsa
+    arch: arm64
+    boot_method: grub
+    filters:
+      - passlist: {defconfig: ['defconfig']}
+      - blocklist: {kernel: ['v3.']}
+
   x86-atom330:
     mach: x86
     arch: x86
@@ -2194,6 +2202,11 @@ test_configs:
       - igt-kms-tegra
       - sleep
       - usb
+
+  - device_type: thunderx
+    test_plans:
+      - baseline
+      - kselftest
 
   - device_type: x86-atom330
     test_plans:
