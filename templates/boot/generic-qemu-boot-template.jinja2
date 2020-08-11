@@ -5,6 +5,9 @@
 {% if arch == "arm64" %}
 {% set console_dev = 'ttyAMA0' %}
 {% endif %}
+{% if arch == 'riscv' %}
+{% set console_dev = 'ttyS0' %}
+{% endif %}
 {% if arch == 'x86_64' %}
 {% set console_dev = 'ttyS0' %}
 {% endif %}
