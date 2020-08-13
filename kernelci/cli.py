@@ -31,6 +31,8 @@ class Args:
     add_argument() method of the parser object from argparse.  There should
     also always be a `help` attribute, as this is needed by the Command class.
     """
+    SECTION_DB = ('db', 'db_config')
+    SECTION_LAB = ('lab', 'lab_config')
 
     arch = {
         'name': '--arch',
@@ -67,22 +69,26 @@ class Args:
         'name': '--callback-dataset',
         'help': "Dataset to include in a lab callback",
         'default': 'all',
+        'section': SECTION_DB,
     }
 
     callback_id = {
         'name': '--callback-id',
         'help': "Callback identifier used to look up an authentication token",
+        'section': SECTION_DB,
     }
 
     callback_type = {
         'name': '--callback-type',
         'help': "Type of callback URL",
         'default': 'kernelci',
+        'section': SECTION_DB,
     }
 
     callback_url = {
         'name': '--callback-url',
         'help': "Base URL for the callback",
+        'section': SECTION_DB,
     }
 
     commit = {
@@ -108,6 +114,7 @@ class Args:
     db_token = {
         'name': '--db-token',
         'help': "Database token",
+        'section': SECTION_DB,
     }
 
     defconfig = {
@@ -181,6 +188,7 @@ class Args:
     lab_token = {
         'name': '--lab-token',
         'help': "Test lab token",
+        'section': SECTION_LAB,
     }
 
     mach = {
@@ -264,7 +272,8 @@ class Args:
 
     user = {
         'name': '--user',
-        'help': "User name",
+        'help': "Test lab user name",
+        'section': SECTION_LAB,
     }
 
     variant = {
@@ -322,6 +331,7 @@ class Command:
     def _add_arg(self, arg, required=True):
         kw = dict(arg)
         arg_name = kw.pop('name')
+        kw.pop('section', None)
         if required:
             kw.setdefault('required', True)
         self._parser.add_argument(arg_name, **kw)
