@@ -54,6 +54,11 @@ class Args:
         'help': "Name of a kernel branch in a tree",
     }
 
+    build_config = {
+        'name': '--build-config',
+        'help': "Build config name",
+    }
+
     build_env = {
         'name': '--build-env',
         'help': "Build environment name",
@@ -86,11 +91,6 @@ class Args:
         'help': "Git commit checksum",
     }
 
-    config = {
-        'name': '--config',
-        'help': "Build config name",
-    }
-
     data_file = {
         'name': '--data-file',
         'help': "Path to the file with data to be submitted to storage",
@@ -99,6 +99,11 @@ class Args:
     data_path = {
         'name': '--data-path',
         'help': "Path to the debos files",
+    }
+
+    db_config = {
+        'name': '--db-config',
+        'help': 'Database config name',
     }
 
     db_token = {
@@ -165,9 +170,9 @@ class Args:
         'help': "Path to the kernel checkout directory",
     }
 
-    lab = {
-        'name': '--lab',
-        'help': "Name of a test lab",
+    lab_config = {
+        'name': '--lab-config',
+        'help': 'Test lab config name',
     }
 
     lab_json = {
@@ -217,6 +222,11 @@ class Args:
         'required': False,
         'default': 1,
         'type': int,
+    }
+
+    rootfs_config = {
+        'name': '--rootfs-config',
+        'help': "Root file system config name",
     }
 
     rootfs_dir = {
