@@ -307,7 +307,7 @@ or
 
 class cmd_push_kernel(Command):
     help = "Push the kernel binaries"
-    args = [Args.kdir, Args.api, Args.db_token]
+    args = [Args.kdir, Args.db_config, Args.api, Args.db_token]
     opt_args = [Args.install_path]
 
     def __call__(self, configs, args):
@@ -318,13 +318,15 @@ class cmd_push_kernel(Command):
 class cmd_publish_kernel(Command):
     help = "Publish the kernel meta-data"
     args = [Args.kdir]
-    opt_args = [Args.api, Args.db_token, Args.json_path, Args.install_path]
+    opt_args = [Args.db_config, Args.api, Args.db_token,
+                Args.json_path, Args.install_path]
 
     def __call__(self, configs, args):
-        if not ((args.api and args.db_token) or args.json_path):
+        if not ((args.db_config and args.api and args.db_token)
+                or args.json_path):
             print("""\
 Invalid arguments, please provide at least one of these sets of options:
-    --db-token, --api to publish to the backend server
+    --db-config, --db-token, --api to publish to the backend server
     --json-path to save the data in a local JSON file\
 """)
             return False
