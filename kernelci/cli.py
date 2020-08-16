@@ -16,6 +16,8 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 
 import argparse
+import configparser
+import os.path
 
 
 # -----------------------------------------------------------------------------
@@ -31,6 +33,8 @@ class Args:
     add_argument() method of the parser object from argparse.  There should
     also always be a `help` attribute, as this is needed by the Command class.
     """
+    SECTION_DB = ('db', 'db_config')
+    SECTION_LAB = ('lab', 'lab_config')
 
     arch = {
         'name': '--arch',
@@ -40,8 +44,7 @@ class Args:
     api = {
         'name': '--api',
         'help': "Backend API URL",
-        'default': "https://api.kernelci.org",
-        'required': False,
+        'section': SECTION_DB,
     }
 
     bmeta_json = {
@@ -67,23 +70,25 @@ class Args:
     callback_dataset = {
         'name': '--callback-dataset',
         'help': "Dataset to include in a lab callback",
-        'default': 'all',
+        'section': SECTION_DB,
     }
 
     callback_id = {
         'name': '--callback-id',
         'help': "Callback identifier used to look up an authentication token",
+        'section': SECTION_DB,
     }
 
     callback_type = {
         'name': '--callback-type',
         'help': "Type of callback URL",
-        'default': 'kernelci',
+        'section': SECTION_DB,
     }
 
     callback_url = {
         'name': '--callback-url',
         'help': "Base URL for the callback",
+        'section': SECTION_DB,
     }
 
     commit = {
@@ -109,6 +114,7 @@ class Args:
     db_token = {
         'name': '--db-token',
         'help': "Database token",
+        'section': SECTION_DB,
     }
 
     defconfig = {
@@ -137,13 +143,6 @@ class Args:
         'help': "Path to the dtbs.json file",
     }
 
-    filename = {
-        'name': '--filename',
-        'help': "Kernel sources destination filename",
-        'required': False,
-        'default': 'linux-src.tar.gz',
-    }
-
     install_path = {
         'name': '--install-path',
         'help':
@@ -170,6 +169,11 @@ class Args:
         'help': "Path to the kernel checkout directory",
     }
 
+    kernel_tarball = {
+        'name': '--kernel-tarball',
+        'help': "Kernel source tarball destination filename",
+    }
+
     lab_config = {
         'name': '--lab-config',
         'help': 'Test lab config name',
@@ -183,6 +187,7 @@ class Args:
     lab_token = {
         'name': '--lab-token',
         'help': "Test lab token",
+        'section': SECTION_LAB,
     }
 
     mach = {
@@ -219,8 +224,6 @@ class Args:
     retries = {
         'name': '--retries',
         'help': 'Number of retries before download fails',
-        'required': False,
-        'default': 1,
         'type': int,
     }
 
@@ -238,7 +241,6 @@ class Args:
         'name': '--storage',
         'help': "Storage URL",
         'default': "https://storage.kernelci.org",
-        'required': False,
     }
 
     target = {
@@ -268,7 +270,8 @@ class Args:
 
     user = {
         'name': '--user',
-        'help': "User name",
+        'help': "Test lab user name",
+        'section': SECTION_LAB,
     }
 
     variant = {
@@ -312,23 +315,147 @@ class Command:
         if not self.help:
             raise AttributeError("Missing help message for {}".format(name))
         self._parser = sub_parser.add_parser(name, help=self.help)
-        if self.args:
-            for arg in self.args:
-                self._add_arg(arg, True)
-        if self.opt_args:
-            for arg in self.opt_args:
-                self._add_arg(arg, False)
+        for arg_list in [self.args, self.opt_args]:
+            if arg_list:
+                for arg in arg_list:
+                    self._add_arg(arg)
         self._parser.set_defaults(func=self)
+        self._args_dict = dict()
+        for arg_list in [self.args, self.opt_args]:
+            if arg_list:
+                self._args_dict.update({
+                    self.to_opt_name(arg['name']): arg
+                    for arg in arg_list
+                })
 
     def __call__(self, *args, **kw):
         raise NotImplementedError("Command not implemented")
 
-    def _add_arg(self, arg, required=True):
+    def _add_arg(self, arg):
         kw = dict(arg)
         arg_name = kw.pop('name')
-        if required:
-            kw.setdefault('required', True)
+        kw.pop('section', None)
         self._parser.add_argument(arg_name, **kw)
+
+    def get_arg_data(self, arg_name):
+        """Get the data associated with an argument definition
+
+        Get the dictionary with the data associated with an argument using the
+        option form of the name.  For example, to get the data associated with
+        `--db-token` argument, use `db_token` per the translation implemented
+        by the `Command.to_opt_name()` method.
+        """
+        return self._args_dict.get(arg_name)
+
+    @classmethod
+    def to_opt_name(cls, arg_name):
+        """Convert a command line argument name to the option name convention
+
+        Convert a command line argument to an option name which can be used as
+        a Python attribute in the same way as `argparse` adds options to a
+        namespace.  For example, `--db-token` gets convereted to `db_token`.
+        """
+        return arg_name.strip('-').replace('-', '_')
+
+
+class Options:
+    """Options based on user settings with CLI override."""
+
+    def __init__(self, path, command, cli_args, section=None):
+        """An Options object provides key/value pairs via its attributes.
+
+        The options are first loaded from a settings file using the
+        `configparser` module.  Then when getting an object attribute, the name
+        is first looked up in the command line arguments so that they take
+        precendence over the settings file.  Conversely, any command line
+        argument can have a default value set in the settings file.
+
+        Arguments that have a `section` attribute can only be defined in the
+        settings file under the section that matches the specification.  For
+        example, with `('db', 'db_config')`, the option can only be defined in
+        a section called `db:<db-config-name>` with `db-config-name` the value
+        passed in `db_config`, or in the `--db-config` command line argument.
+
+        *path* is the path to the config file, which by default is
+                `kernelci.conf` or
+               `~/.config/kernelci/kernelci.conf` or
+               `/etc/kernelci/kernelci.conf`
+
+        *command* is a `Command` object for the commant being run
+
+        *cli_args* is an object with command line arguments as produced by
+                   argparse
+
+        *section* is a section name to use in the settings file, to provide a
+                  way to have default values for each CLI tool
+
+        """
+        if path is None:
+            default_paths = [
+                'kernelci.conf',
+                os.path.expanduser('~/.config/kernelci/kernelci.conf'),
+                '/etc/kernelci/kernelci.conf',
+            ]
+            for path in default_paths:
+                if os.path.exists(path):
+                    break
+        self._settings = configparser.ConfigParser()
+        if path and os.path.exists(path):
+            self._settings.read(path)
+        self._command = command
+        self._cli_args = cli_args
+        self._section = section
+
+    def __getattr__(self, name):
+        return self.get(name)
+
+    @property
+    def command(self):
+        """The Command object associated with this instance."""
+        return self._command
+
+    def get(self, option, as_list=False):
+        """Get an option value.
+
+        This is an explicit call to get an option value, which can also be done
+        by accessing an object attribute i.e. `self.option`.
+
+        *option* is the name of the option to look up
+
+        *as_list* is to always get the result as a list even if there is only
+                  one value, for options that can have multiple values
+                  separated by some spaces
+        """
+        value = getattr(self._cli_args, option, None)
+        if value:
+            return value
+        opt_data = self._command.get_arg_data(option)
+        section_data = opt_data.get('section')
+        if section_data:
+            section_name, section_config_option = section_data
+            section_config = self.get(section_config_option)
+            if not section_config:
+                return None
+            section = ':'.join([section_name, section_config])
+        else:
+            section = self._section
+        if not self._settings.has_option(section, option):
+            return None
+        value = self._settings.get(section, option).split()
+        if not as_list and len(value) == 1:
+            value = value[0]
+        return value
+
+    def get_missing_args(self):
+        """Get a list of any missing required arguments."""
+        if not self.command.args:
+            return None
+        missing_args = []
+        for arg_name in (arg['name'] for arg in self.command.args):
+            opt_name = self.command.to_opt_name(arg_name)
+            if self.get(opt_name) is None:
+                missing_args.append(arg_name)
+        return missing_args
 
 
 def make_parser(title, default_yaml):
@@ -340,6 +467,8 @@ def make_parser(title, default_yaml):
     parser = argparse.ArgumentParser(title)
     parser.add_argument("--yaml-configs", default=default_yaml,
                         help="Path to the YAML configs file")
+    parser.add_argument("--settings",
+                        help="Path to the settings file")
     return parser
 
 
@@ -379,13 +508,29 @@ def parse_args_with_parser(parser, glob):
     return args
 
 
-def parse_args(title, default_yaml, glob):
-    """Create a parser and parse the command line arguments
+def make_options(args, prog):
+    """Return an Options object using existing arguments
+
+    *args* is the arguments as returned by `argparse`
+    *prog* is the name of the command line program
+    """
+    opts = Options(args.settings, args.func, args, prog)
+    missing_args = opts.get_missing_args()
+    if missing_args:
+        print("The following arguments or settings are required: {}".format(
+            ', '.join(missing_args)))
+        exit(1)
+    return opts
+
+
+def parse_opts(prog, default_yaml, glob):
+    """Return an Options object with command line arguments and settings
 
     This will create a parser and automatically add the sub-commands from the
-    global attributes `glob` and return the parsed arguments.
+    global attributes `glob` and parse the arguments.  Thhen it will create an
+    `Options` object using any KernelCI settings file found.
 
-    *title* is the parser title
+    *prog* is the command line program name
 
     *default_yaml* is the name of the default YAML configuration file to use
                    with the command line utility
@@ -393,5 +538,6 @@ def parse_args(title, default_yaml, glob):
     *glob* is the dictionary with all the global attributes where to look for
            commands starting with `cmd_`
     """
-    parser = make_parser(title, default_yaml)
-    return parse_args_with_parser(parser, glob)
+    parser = make_parser(prog, default_yaml)
+    args = parse_args_with_parser(parser, glob)
+    return make_options(args, prog)
