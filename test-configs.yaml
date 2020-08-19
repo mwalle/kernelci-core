@@ -41,8 +41,8 @@ file_systems:
 
   debian_buster_nfs:
     type: debian
-    ramdisk: 'buster/20200814.0/{arch}/initrd.cpio.gz'
-    nfs: 'buster/20200814.0/{arch}/full.rootfs.tar.xz'
+    ramdisk: 'buster/20200818.0/{arch}/initrd.cpio.gz'
+    nfs: 'buster/20200818.0/{arch}/full.rootfs.tar.xz'
 
   debian_buster-cros-ec_ramdisk:
     type: debian
@@ -161,9 +161,12 @@ test_plans:
         panfrost_submit
 
   kselftest:
-    rootfs: buildroot_kselftest_ramdisk
+    rootfs: debian_buster_nfs
+    pattern: 'kselftest/{category}-{method}-{protocol}-nfs-kselftest-template.jinja2'
     filters:
       - passlist: {defconfig: ['kselftest']}
+    params:
+      job_timeout: '60'
 
   sleep:
     rootfs: debian_buster_ramdisk
@@ -1434,13 +1437,11 @@ test_configs:
   - device_type: apq8016-sbc
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: ar9331-dpt-module
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
       - sleep
 
   - device_type: armada-370-db
@@ -1503,7 +1504,6 @@ test_configs:
   - device_type: arndale
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: at91-sama5d2_xplained
     test_plans:
@@ -1526,24 +1526,20 @@ test_configs:
   - device_type: bcm2837-rpi-3-b
     test_plans:
       - baseline
-      - kselftest
       - usb
 
   - device_type: bcm2837-rpi-3-b-32
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: beaglebone-black
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
 
   - device_type: beagle-xm
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: cubietruck
     test_plans:
@@ -1566,54 +1562,44 @@ test_configs:
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
       - sleep
 
   - device_type: dra7-evm
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: fsl-ls1012a-rdb
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: fsl-ls1028a-rdb
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: fsl-ls1043a-rdb
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: fsl-ls1046a-rdb
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: fsl-ls1088a-rdb
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: fsl-ls2088a-rdb
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: fsl-lx2160a-rdb
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: hi6220-hikey
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
 
   - device_type: hip07-d05
     test_plans:
@@ -1639,35 +1625,30 @@ test_configs:
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
       - sleep
 
   - device_type: imx27-phytec-phycard-s-rdk
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
       - sleep
 
   - device_type: imx28-duckbill
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
       - sleep
 
   - device_type: imx53-qsrb
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
       - sleep
 
   - device_type: imx6dl-riotboard
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
       - sleep
 
   - device_type: imx6q-nitrogen6x
@@ -1686,26 +1667,22 @@ test_configs:
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
       - sleep
 
   - device_type: imx6q-sabrelite
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
       - sleep
       - usb
 
   - device_type: imx6q-sabresd
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: imx6qp-sabresd
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: imx6sll-evk
     test_plans:
@@ -1715,22 +1692,18 @@ test_configs:
   - device_type: imx6sx-sdb
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: imx6ul-14x14-evk
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: imx6ull-14x14-evk
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: imx7d-sdb
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: imx7ulp-evk
     test_plans:
@@ -1740,7 +1713,6 @@ test_configs:
   - device_type: imx8mn-ddr4-evk
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: imx8mp-evk
     test_plans:
@@ -1751,7 +1723,6 @@ test_configs:
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
 
   - device_type: kirkwood-db-88f6282
     test_plans:
@@ -1766,7 +1737,6 @@ test_configs:
   - device_type: meson8b-odroidc1
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: meson-g12a-sei510
     test_plans:
@@ -1784,64 +1754,54 @@ test_configs:
   - device_type: meson-g12b-odroid-n2
     test_plans:
       - baseline
+      - kselftest
 
   - device_type: meson-g12b-a311d-khadas-vim3
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
 
   - device_type: meson-gxbb-nanopi-k2
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: meson-gxbb-odroidc2
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: meson-gxbb-p200
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: meson-gxl-s805x-libretech-ac
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: meson-gxl-s905d-p230
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: meson-gxl-s805x-p241
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: meson-gxl-s905x-khadas-vim
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: meson-gxl-s905x-libretech-cc
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: meson-gxm-khadas-vim2
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
 
   - device_type: meson-gxm-q200
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
 
   - device_type: meson-sm1-khadas-vim3l
     test_plans:
@@ -1867,19 +1827,16 @@ test_configs:
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
 
   - device_type: odroid-x2
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: odroid-xu3
     test_plans:
       - baseline
       - baseline-nfs
       - igt-kms-exynos
-      - kselftest
       - sleep
       - usb
 
@@ -1896,18 +1853,15 @@ test_configs:
   - device_type: panda
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: panda-es
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: peach-pi
     test_plans:
       - baseline
       - cros-ec
-      - kselftest
       - sleep
       - usb
 
@@ -2002,7 +1956,6 @@ test_configs:
     test_plans: &r8a7795-salvator-x_test-plans
       - baseline
       - baseline-nfs
-      - kselftest
 
 # this is the same device than r8a7795-salvator-x
   - device_type: r8a77950-salvator-x
@@ -2032,13 +1985,11 @@ test_configs:
   - device_type: rk3399-puma-haikou
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: rk3288-rock2-square
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
       - sleep
       - usb
 
@@ -2061,25 +2012,21 @@ test_configs:
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
       - sleep
 
   - device_type: snow
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
 
   - device_type: stm32mp157c-dk2
     test_plans:
       - baseline
-      - kselftest
 
   - device_type: sun4i-a10-olinuxino-lime
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
 
   - device_type: sun50i-a64-bananapi-m64
     test_plans:
@@ -2137,7 +2084,6 @@ test_configs:
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
 
   - device_type: sun8i-a23-evb
     test_plans:
@@ -2211,7 +2157,6 @@ test_configs:
     test_plans:
       - baseline
       - baseline-nfs
-      - kselftest
 
   - device_type: x86-celeron
     test_plans:
