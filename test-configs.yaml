@@ -168,6 +168,12 @@ test_plans:
     params:
       job_timeout: '60'
 
+  preempt-rt:
+    rootfs: debian_buster_nfs
+    pattern: 'preempt-rt/{category}-{method}-{protocol}-nfs-preempt-rt-template.jinja2'
+    filters:
+      - passlist: {defconfig: ['preempt_rt']}
+
   sleep:
     rootfs: debian_buster_ramdisk
 
