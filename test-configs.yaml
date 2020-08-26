@@ -168,6 +168,12 @@ test_plans:
     params:
       job_timeout: '60'
 
+  preempt-rt:
+    rootfs: debian_buster_nfs
+    pattern: 'preempt-rt/{category}-{method}-{protocol}-nfs-preempt-rt-template.jinja2'
+    filters:
+      - passlist: {defconfig: ['preempt_rt']}
+
   sleep:
     rootfs: debian_buster_ramdisk
 
@@ -1773,6 +1779,7 @@ test_configs:
     test_plans:
       - baseline
       - kselftest
+      - preempt-rt
 
   - device_type: meson-g12b-a311d-khadas-vim3
     test_plans:

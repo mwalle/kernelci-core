@@ -167,6 +167,12 @@ fragments:
   x86_kvm_guest:
     path: "kernel/configs/kvm_guest.config"
 
+  preempt_rt:
+    path: "kernel/configs/preempt_rt.config"
+    configs:
+      - 'CONFIG_EXPERT=y'
+      - 'CONFIG_PREEMPT_RT=y'
+      - 'CONFIG_PREEMPT_RT_FULL=y' # <= v4.19
 
 build_environments:
 
@@ -304,10 +310,9 @@ arch_defconfigs: &arch_defconfigs
 
 
 minimal_variants: &minimal_variants
-  gcc-8:
+  gcc-8: &gcc_8_minimal
     build_environment: gcc-8
     architectures: *arch_defconfigs
-
 
 # Build fewer kernel configs with stable branches
 stable_variants: &stable_variants
@@ -336,6 +341,12 @@ stable_variants: &stable_variants
       x86_64:
         base_defconfig: 'x86_64_defconfig'
         extra_configs: ['allnoconfig']
+
+preempt_rt_variants: &preempt_rt_variants
+  <<: *minimal_variants
+  gcc-8:
+    <<: *gcc_8_minimal
+    fragments: [preempt_rt]
 
 android_variants: &android_variants
   gcc-8:
@@ -819,22 +830,37 @@ build_configs:
   rt-stable_v3.18-rt:
     tree: rt-stable
     branch: 'v3.18-rt'
+    variants: *preempt_rt_variants
 
   rt-stable_v4.1-rt:
     tree: rt-stable
     branch: 'v4.1-rt'
+    variants: *preempt_rt_variants
 
   rt-stable_v4.4-rt:
     tree: rt-stable
     branch: 'v4.4-rt'
+    variants: *preempt_rt_variants
 
   rt-stable_v4.9-rt:
     tree: rt-stable
     branch: 'v4.9-rt'
+    variants: *preempt_rt_variants
 
   rt-stable_v4.14-rt:
     tree: rt-stable
     branch: 'v4.14-rt'
+    variants: *preempt_rt_variants
+
+  rt-stable_v4.19-rt:
+    tree: rt-stable
+    branch: 'v4.19-rt'
+    variants: *preempt_rt_variants
+
+  rt-stable_v5.4-rt:
+    tree: rt-stable
+    branch: 'v5.4-rt'
+    variants: *preempt_rt_variants
 
   samsung:
     tree: samsung
