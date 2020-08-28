@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     binutils-aarch64-linux-gnu \
     binutils-arm-linux-gnueabihf \
     binutils \
-    clang-10
+    clang-10 lld-10 llvm-10
 
 RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 500
 
