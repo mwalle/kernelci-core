@@ -454,6 +454,9 @@ def _run_make(kdir, arch, target=None, jopt=None, silent=True, cc='gcc',
 
     args.append('ARCH={}'.format(arch))
 
+    if cc.startswith('clang'):
+        args.append('LLVM=1')
+
     if cross_compile:
         args.append('CROSS_COMPILE={}'.format(cross_compile))
 
