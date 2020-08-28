@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     binutils-aarch64-linux-gnu \
     binutils-arm-linux-gnueabihf \
     binutils \
-    clang-9
+    clang-9 llvm-9 lld-9
 
 RUN update-alternatives --install /usr/bin/clang clang /usr/bin/clang-9 500
 
