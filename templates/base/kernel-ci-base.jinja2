@@ -2,18 +2,15 @@
 
 {%- block metadata %}
 metadata:
-  image.type: 'kernel-ci'
   image.url: {{ image_url }}
   kernel.tree: {{ tree }}
   kernel.version: {{ kernel }}
   kernel.endian: {{ endian }}
   kernel.defconfig: {{ defconfig }}
-  kernel.defconfig_base: {{ defconfig_base }}
-  kernel.arch_defconfig: {{ arch_defconfig }}
+  kernel.defconfig_full: {{ defconfig_full }}
   platform.dtb: {{ dtb_full }}
   platform.dtb_short: {{ dtb_short }}
   platform.fastboot: {{ fastboot }}
-  platform.name: {{ platform }}
   platform.mach: {{ mach }}
   test.plan: {{ plan }}
   test.plan_variant: {{ plan_variant }}
