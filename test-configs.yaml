@@ -162,7 +162,7 @@ test_plans:
     filters:
       - passlist: {defconfig: ['kselftest']}
     params:
-      job_timeout: '60'
+      job_timeout: '120'
 
   sleep:
     rootfs: debian_buster_ramdisk
