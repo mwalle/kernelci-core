@@ -213,6 +213,8 @@ device_types:
       # This board could boot v4.* if CONFIG_SERIAL_8250_OMAP is set. It was
       # added to multi_v7_defconfig as of 5.0.
       - blocklist: {kernel: ['v3.', 'v4.']}
+    params:
+      test_params: 'freez'
 
   apq8016-sbc:
     mach: qcom
@@ -231,6 +233,8 @@ device_types:
     boot_method: barebox
     filters:
       - blocklist: *allmodconfig_filter
+    params:
+      test_params: 'freez'
 
   armada-370-db:
     mach: mvebu
@@ -356,6 +360,8 @@ device_types:
     mach: broadcom
     class: arm-dtb
     boot_method: uboot
+    params:
+      test_params: 'freez'
 
   bcm2837-rpi-3-b:
     mach: broadcom
@@ -432,6 +438,8 @@ device_types:
     boot_method: barebox
     filters:
       - blocklist: *allmodconfig_filter
+    params:
+      test_params: 'freez'
 
   fsl-ls1012a-rdb:
     mach: freescale
@@ -511,6 +519,8 @@ device_types:
     boot_method: barebox
     filters:
       - blocklist: *allmodconfig_filter
+    params:
+      test_params: 'freez'
 
   imx27-phytec-phycard-s-rdk:
     mach: imx
@@ -518,6 +528,8 @@ device_types:
     boot_method: barebox
     filters:
       - blocklist: *allmodconfig_filter
+    params:
+      test_params: 'freez'
 
   imx28-duckbill:
     mach: imx
@@ -525,6 +537,8 @@ device_types:
     boot_method: barebox
     filters:
       - blocklist: *allmodconfig_filter
+    params:
+      test_params: 'freez'
 
   imx53-qsrb:
     mach: imx
@@ -536,6 +550,8 @@ device_types:
             - 'imx_v4_v5_defconfig'
             - 'multi_v5_defconfig'
             - 'allmodconfig'
+    params:
+      test_params: 'freez'
 
   imx6dl-riotboard:
     mach: imx
@@ -547,6 +563,8 @@ device_types:
             - 'imx_v4_v5_defconfig'
             - 'multi_v5_defconfig'
             - 'allmodconfig'
+    params:
+      test_params: 'freez'
 
   imx6q-nitrogen6x:
     mach: imx
@@ -587,6 +605,8 @@ device_types:
             - 'imx_v4_v5_defconfig'
             - 'multi_v5_defconfig'
             - 'allmodconfig'
+    params:
+      test_params: 'freez'
 
   imx6q-sabrelite:
     mach: imx
@@ -601,6 +621,8 @@ device_types:
             - 'allmodconfig'
             - 'multi_v7_defconfig+kselftest'
           kernel: ['v3.18']
+    params:
+      test_params: 'freez'
 
   imx6q-sabresd:
     mach: imx
@@ -852,6 +874,8 @@ device_types:
     mach: mediatek
     class: arm64-dtb
     boot_method: depthcharge
+    params:
+      test_params: 'freez'
 
   mustang:
     mach: apm
@@ -878,6 +902,8 @@ device_types:
     boot_method: uboot
     dtb: 'exynos5422-odroidxu3.dtb'
     flags: ['lpae']
+    params:
+      test_params: 'freez'
 
   orion5x-rd88f5182-nas:
     mach: mvebu
@@ -916,6 +942,8 @@ device_types:
     filters:
       - blocklist: *allmodconfig_filter
       - blocklist: {kernel: ['v3.']}
+    params:
+      test_params: 'freez'
 
   qcom-qdf2400:
     mach: qcom
@@ -1151,6 +1179,8 @@ device_types:
     mach: rockchip
     class: arm64-dtb
     boot_method: depthcharge
+    params:
+      test_params: 'freez'
 
   rk3399-puma-haikou:
     mach: rockchip
@@ -1165,6 +1195,8 @@ device_types:
     class: arm-dtb
     boot_method: uboot
     flags: ['lpae', 'fastboot']
+    params:
+      test_params: 'freez'
 
   rk3328-rock64:
     mach: rockchip
@@ -1179,6 +1211,8 @@ device_types:
     class: arm-dtb
     boot_method: depthcharge
     flags: ['lpae']
+    params:
+      test_params: 'freez'
 
   sun8i-a33-sinlinx-sina33:
     mach: allwinner
@@ -1191,6 +1225,8 @@ device_types:
     boot_method: barebox
     filters:
       - blocklist: *allmodconfig_filter
+    params:
+      test_params: 'freez'
 
   snow:
     mach: exynos
@@ -1378,6 +1414,8 @@ device_types:
     class: arm-dtb
     boot_method: depthcharge
     flags: ['lpae']
+    params:
+      test_params: 'freez'
 
   thunderx:
     mach: sbsa
