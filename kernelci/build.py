@@ -329,8 +329,9 @@ def push_tarball(config, kdir, storage, api, token):
     """
     tarball_name = "linux-src_{}.tar.gz".format(config.name)
     describe = git_describe(config.tree.name, kdir)
-    tarball_url = '/'.join([
-        storage, config.tree.name, config.branch, describe, tarball_name])
+    tarball_url = '/'.join(list(item.replace('/', '-') for item in [
+        storage, config.tree.name, config.branch, describe, tarball_name
+    ]))
     resp = requests.head(tarball_url)
     if resp.status_code == 200:
         return tarball_url
@@ -842,10 +843,9 @@ def install_kernel(kdir, tree_name, tree_url, git_branch, git_commit=None,
 
     build_env = bmeta['build_environment']
     defconfig_full = bmeta['defconfig_full']
-    defconfig_dir = defconfig_full.replace('/', '-')
     if not publish_path:
-        publish_path = '/'.join([
-            tree_name, git_branch, describe, arch, defconfig_dir, build_env,
+        publish_path = '/'.join(item.replace('/', '-') for item in [
+            tree_name, git_branch, describe, arch, defconfig_full, build_env,
         ])
 
     bmeta.update({
