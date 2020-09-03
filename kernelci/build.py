@@ -325,8 +325,10 @@ def push_tarball(config, kdir, storage, api, token):
     """
     tarball_name = "linux-src_{}.tar.gz".format(config.name)
     describe = git_describe(config.tree.name, kdir)
-    tarball_url = '/'.join([
-        storage, config.tree.name, config.branch, describe, tarball_name])
+    tarball_url = urllib.parse.urljoin(
+        storage, '/'.join(list(item.replace('/', '-') for item in [
+        config.tree.name, config.branch, describe, tarball_name
+    ])))
     resp = requests.head(tarball_url)
     if resp.status_code == 200:
         return tarball_url
