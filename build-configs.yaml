@@ -818,7 +818,7 @@ build_configs:
 
   renesas:
     tree: renesas
-    branch: 'devel'
+    branch: 'master'
 
   renesas_next:
     tree: renesas
