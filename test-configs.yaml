@@ -31,10 +31,6 @@ file_systems:
     type: buildroot
     ramdisk: '{arch}/baseline/rootfs.cpio.gz'
 
-  buildroot_kselftest_ramdisk:
-    type: buildroot
-    ramdisk: '{arch}/tests/rootfs.cpio.gz'
-
   debian_buster_ramdisk:
     type: debian
     ramdisk: 'buster/20200821.0/{arch}/rootfs.cpio.gz'
@@ -43,6 +39,7 @@ file_systems:
     type: debian
     ramdisk: 'buster/20200821.0/{arch}/initrd.cpio.gz'
     nfs: 'buster/20200821.0/{arch}/full.rootfs.tar.xz'
+    root_type: nfs
 
   debian_buster-cros-ec_ramdisk:
     type: debian
@@ -162,11 +159,10 @@ test_plans:
 
   kselftest:
     rootfs: debian_buster_nfs
-    pattern: 'kselftest/{category}-{method}-{protocol}-nfs-kselftest-template.jinja2'
     filters:
       - passlist: {defconfig: ['kselftest']}
     params:
-      job_timeout: '60'
+      job_timeout: '120'
 
   sleep:
     rootfs: debian_buster_ramdisk
@@ -1163,6 +1159,8 @@ device_types:
     class: arm-dtb
     boot_method: depthcharge
     flags: ['lpae']
+    filters:
+      - blocklist: {defconfig: ['allnoconfig', 'allmodconfig']}
 
   sun8i-a33-sinlinx-sina33:
     mach: allwinner
@@ -2013,6 +2011,7 @@ test_configs:
       - cros-ec
       - igt-kms-rockchip
       - igt-gpu-panfrost
+      - kselftest
       - sleep
       - usb
       - v4l2-compliance-uvc
