@@ -672,7 +672,7 @@ def build_kernel(build_env, kdir, arch, defconfig=None, jopt=None,
             'kdir': os.path.join(kdir, 'tools/testing/selftests')
         })
         opts.update({
-            'FORMAT': '.gz',
+            'FORMAT': '.xz',
         })
         # 'gen_tar' target does 'make install' and creates tarball
         result = _run_make(target='gen_tar', **kwargs)
