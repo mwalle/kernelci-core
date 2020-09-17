@@ -819,7 +819,7 @@ def install_kernel(kdir, tree_name, tree_url, git_branch, git_commit=None,
             path=mod_path, tarball=modules_tarball_path))
 
     # 'make gen_tar' creates this tarball path
-    kselftest_tarball = 'kselftest-packages/kselftest.tar.gz'
+    kselftest_tarball = 'kselftest-packages/kselftest.tar.xz'
     kselftest_tarball_path = os.path.join(output_path, '_kselftest_',
                                           kselftest_tarball)
     if os.path.exists(kselftest_tarball_path):
