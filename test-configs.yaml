@@ -178,6 +178,10 @@ test_plans:
     rootfs: debian_buster-ltp_nfs
     filters:
       - blocklist: *kselftest_defconfig_filter
+    params:
+      skip_install: "true"
+      tst_cmdfiles: "ipc"
+      skipfile: skipfile-lkft.yaml
 
   sleep:
     rootfs: debian_buster_ramdisk
