@@ -325,14 +325,15 @@ def push_tarball(config, kdir, storage, api, token):
     """
     tarball_name = "linux-src_{}.tar.gz".format(config.name)
     describe = git_describe(config.tree.name, kdir)
-    tarball_url = '/'.join([
-        storage, config.tree.name, config.branch, describe, tarball_name])
+    path = '/'.join(list(item.replace('/', '-') for item in [
+        config.tree.name, config.branch, describe
+    ]))
+    tarball_url = urllib.parse.urljoin(storage, '/'.join([path, tarball_name]))
     resp = requests.head(tarball_url)
     if resp.status_code == 200:
         return tarball_url
     tarball = "{}.tar.gz".format(config.name)
     make_tarball(kdir, tarball)
-    path = '/'.join([config.tree.name, config.branch, describe]),
     upload_files(api, token, path, {tarball_name: open(tarball, 'rb')})
     os.unlink(tarball)
     return tarball_url
@@ -456,7 +457,10 @@ def _run_make(kdir, arch, target=None, jopt=None, silent=True, cc='gcc',
     if cross_compile_compat:
         args.append('CROSS_COMPILE_COMPAT={}'.format(cross_compile_compat))
 
-    args.append('HOSTCC={}'.format(cc))
+    if cc.startswith('clang'):
+        args.append('LLVM=1')
+    else:
+        args.append('HOSTCC={}'.format(cc))
 
     if use_ccache:
         px = cross_compile if cc == 'gcc' and cross_compile else ''
@@ -467,7 +471,8 @@ def _run_make(kdir, arch, target=None, jopt=None, silent=True, cc='gcc',
         args.append('CC={}'.format(cc))
 
     if output:
-        args.append('O={}'.format(os.path.relpath(output, kdir)))
+        # due to kselftest Makefile issues, O= cannot be a relative path
+        args.append('O={}'.format(os.path.abspath(output)))
 
     if target:
         args.append(target)
@@ -523,16 +528,20 @@ def _make_defconfig(defconfig, kwargs, extras, verbose, log_file):
         os.chmod(kconfig_frag,
                  stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
         rel_path = os.path.relpath(output_path, kdir)
+        cc = kwargs['cc']
+        cc_env = (
+            "export LLVM=1" if cc.startswith('clang') else
+            "export HOSTCC={cc}\nexport CC={cc}".format(cc=cc)
+        )
         cmd = """
 set -e
 cd {kdir}
+{cc_env}
 export ARCH={arch}
-export HOSTCC={cc}
-export CC={cc}
 export CROSS_COMPILE={cross}
 export CROSS_COMPILE_COMPAT={cross_compat}
 scripts/kconfig/merge_config.sh -O {output} '{base}' '{frag}' {redir}
-""".format(kdir=kdir, arch=kwargs['arch'], cc=kwargs['cc'],
+""".format(kdir=kdir, arch=kwargs['arch'], cc_env=cc_env,
            cross=kwargs['cross_compile'], output=rel_path,
            cross_compat=kwargs['cross_compile_compat'],
            base=os.path.join(rel_path, '.config'),
@@ -639,6 +648,28 @@ def build_kernel(build_env, kdir, arch, defconfig=None, jopt=None,
             'STRIP': "{}strip".format(cross_compile),
         })
         result = _run_make(target='modules_install', **kwargs)
+
+    # kselftest
+    if result and "kselftest" in defconfig_extras:
+        kselftest_install_path = os.path.join(output_path, '_kselftest_')
+        if os.path.exists(kselftest_install_path):
+            shutil.rmtree(kselftest_install_path)
+        opts.update({
+            'INSTALL_PATH': kselftest_install_path,
+        })
+        #
+        # Ideally this should just be a 'make kselftest-install', but
+        # due to bugs with O= in kselftest Makefile, this has to be
+        # 'make -C tools/testing/selftests install'
+        #
+        kwargs.update({
+            'kdir': os.path.join(kdir, 'tools/testing/selftests')
+        })
+        opts.update({
+            'FORMAT': '.xz',
+        })
+        # 'gen_tar' target does 'make install' and creates tarball
+        result = _run_make(target='gen_tar', **kwargs)
 
     cc_version_cmd = "{}{} --version 2>&1".format(
         cross_compile if cross_compile and cc == 'gcc' else '', cc)
@@ -787,12 +818,22 @@ def install_kernel(kdir, tree_name, tree_url, git_branch, git_commit=None,
         shell_cmd("tar -C{path} -cJf {tarball} .".format(
             path=mod_path, tarball=modules_tarball_path))
 
+    # 'make gen_tar' creates this tarball path
+    kselftest_tarball = 'kselftest-packages/kselftest.tar.xz'
+    kselftest_tarball_path = os.path.join(output_path, '_kselftest_',
+                                          kselftest_tarball)
+    if os.path.exists(kselftest_tarball_path):
+        kselftest_tarball = os.path.basename(kselftest_tarball_path)
+        shutil.copy(kselftest_tarball_path,
+                    os.path.join(install_path, kselftest_tarball))
+    else:
+        kselftest_tarball = kselftest_tarball_path = None
+
     build_env = bmeta['build_environment']
     defconfig_full = bmeta['defconfig_full']
-    defconfig_dir = defconfig_full.replace('/', '-')
     if not publish_path:
-        publish_path = '/'.join([
-            tree_name, git_branch, describe, arch, defconfig_dir, build_env,
+        publish_path = '/'.join(item.replace('/', '-') for item in [
+            tree_name, git_branch, describe, arch, defconfig_full, build_env,
         ])
 
     bmeta.update({
@@ -810,6 +851,7 @@ def install_kernel(kdir, tree_name, tree_url, git_branch, git_commit=None,
         'git_describe_v': describe_v,
         'git_commit': git_commit,
         'file_server_resource': publish_path,
+        'kselftests': kselftest_tarball,
     })
 
     with open(os.path.join(install_path, 'bmeta.json'), 'w') as json_file:
@@ -914,16 +956,19 @@ def publish_kernel(kdir, install_path=None, api=None, token=None,
     return True
 
 
-def load_json(bmeta_json, dtbs_json):
+def load_json(bmeta_json, dtbs_json=None):
     """Load the build meta-data from JSON files and return dictionaries
 
     *bmeta_json* is the path to a kernel build meta-data JSON file
-    *dtbs_json* is the path to a kernel dtbs JSON file
+    *dtbs_json* is the path to an optional kernel dtbs JSON file
 
     The returned value is a 2-tuple with the bmeta and dtbs data.
     """
     with open(bmeta_json) as json_file:
         bmeta = json.load(json_file)
-    with open(dtbs_json) as json_file:
-        dtbs = json.load(json_file)['dtbs']
+    if dtbs_json:
+        with open(dtbs_json) as json_file:
+            dtbs = json.load(json_file)['dtbs']
+    else:
+        dtbs = {'dtbs': []}
     return bmeta, dtbs

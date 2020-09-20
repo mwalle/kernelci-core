@@ -10,6 +10,7 @@ labs:
           plan:
             - baseline
             - baseline-fastboot
+            - kselftest
 
   lab-broonie:
     lab_type: lava
@@ -55,6 +56,8 @@ labs:
             - igt-kms-exynos
             - igt-kms-tegra
             - igt-gpu-panfrost
+            - kselftest
+            - ltp
             - sleep
             - usb
             - v4l2-compliance-uvc

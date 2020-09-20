@@ -90,27 +90,29 @@ def get_params(bmeta, target, plan_config, storage):
     if dtb_full and dtb_full.endswith('.dtb'):
         dtb_url = urllib.parse.urljoin(
             storage, '/'.join([url_px, dtb_full]))
-        platform = dtb.split('.')[0]
     else:
         dtb_url = None
-        platform = target.name
     modules = bmeta.get('modules')
     modules_url = (
         urllib.parse.urljoin(storage, '/'.join([url_px, modules]))
         if modules else None
     )
     rootfs = plan_config.rootfs
-    defconfig = bmeta['defconfig_full']
-    defconfig_base = ''.join(defconfig.split('+')[:1])
-    endian = 'big' if 'BIG_ENDIAN' in defconfig else 'little'
+    defconfig_full = bmeta['defconfig_full']
+    defconfig = ''.join(defconfig_full.split('+')[:1])
+    endian = 'big' if 'BIG_ENDIAN' in defconfig_full else 'little'
     describe = bmeta['git_describe']
+    kselftests = bmeta.get('kselftests')
+    kselftests_url = (
+        urllib.parse.urljoin(storage, '/'.join([url_px, kselftests]))
+        if kselftests else None
+    )
 
     params = {
         'name': job_name,
         'dtb_url': dtb_url,
         'dtb_short': dtb,
         'dtb_full': dtb_full,
-        'platform': platform,
         'mach': target.mach,
         'kernel_url': kernel_url,
         'image_type': 'kernel-ci',
@@ -121,7 +123,7 @@ def get_params(bmeta, target, plan_config, storage):
         'kernel': describe,
         'tree': bmeta['job'],
         'defconfig': defconfig,
-        'arch_defconfig': '-'.join([arch, defconfig]),
+        'defconfig_full': defconfig_full,
         'fastboot': str(target.get_flag('fastboot')).lower(),
         'device_type': target.name,
         'base_device_type': target.base_name,
@@ -132,7 +134,6 @@ def get_params(bmeta, target, plan_config, storage):
         'git_commit': bmeta['git_commit'],
         'git_describe': describe,
         'git_url': bmeta['git_url'],
-        'defconfig_base': defconfig_base,
         'initrd_url': rootfs.get_url('ramdisk', arch, endian),
         'kernel_image': kernel_img,
         'nfsrootfs_url': rootfs.get_url('nfs', arch, endian),
@@ -140,6 +141,7 @@ def get_params(bmeta, target, plan_config, storage):
         'rootfs_prompt': rootfs.prompt,
         'file_server_resource': file_server_resource,
         'build_environment': bmeta['build_environment'],
+        'kselftests_url': kselftests_url,
     }
 
     params.update(plan_config.params)

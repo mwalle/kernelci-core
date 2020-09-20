@@ -180,9 +180,9 @@ build_environments:
     cross_compile_compat: &default_cross_compile_compat
       arm64: 'arm-linux-gnueabihf-'
 
-  clang-9:
+  clang-10:
     cc: clang
-    cc_version: 9
+    cc_version: 10
     arch_map: &clang_arch_map
       i386:
       x86_64:
@@ -193,12 +193,6 @@ build_environments:
       riscv:
     cross_compile: *default_cross_compile
     cross_compile_compat: *default_cross_compile_compat
-
-  clang-10:
-    cc: clang
-    cc_version: 10
-    arch_map: *clang_arch_map
-    cross_compile: *default_cross_compile
 
 
 # Default config with full build coverage
@@ -727,7 +721,14 @@ build_configs:
           mips: *mips_arch
           riscv: *riscv_arch
           arc: *arc_arch
-          arm64: *arm64_arch
+          arm64:
+            <<: *arm64_arch
+            extra_configs:
+              - 'allmodconfig'
+              - 'allnoconfig'
+              - 'defconfig+CONFIG_ARM64_64K_PAGES=y'
+              - 'defconfig+CONFIG_CPU_BIG_ENDIAN=y'
+              - 'defconfig+CONFIG_RANDOMIZE_BASE=y'
           arm:
             base_defconfig: 'multi_v7_defconfig'
             extra_configs:
@@ -737,13 +738,14 @@ build_configs:
               - 'allnoconfig'
               - 'allmodconfig'
 
-      clang-9:
-        build_environment: clang-9
+      clang-10:
+        build_environment: clang-10
         architectures:
           arm64:
             extra_configs:
               - 'allmodconfig'
               - 'allnoconfig'
+              - 'defconfig+CONFIG_ARM64_64K_PAGES=y'
           arm:
             base_defconfig: 'multi_v7_defconfig'
             filters:
@@ -760,13 +762,6 @@ build_configs:
             extra_configs:
               - 'allmodconfig'
               - 'allnoconfig'
-
-      clang-10:
-        build_environment: clang-10
-        architectures:
-          arm: *arm_defconfig
-          arm64: *arm64_defconfig
-          x86_64: *x86_64_defconfig
 
   next_pending-fixes:
     tree: next
@@ -803,7 +798,7 @@ build_configs:
 
   renesas:
     tree: renesas
-    branch: 'devel'
+    branch: 'master'
 
   renesas_next:
     tree: renesas
@@ -889,6 +884,11 @@ build_configs:
     branch: 'linux-5.7.y'
     variants: *stable_variants
 
+  stable_5.8:
+    tree: stable
+    branch: 'linux-5.8.y'
+    variants: *stable_variants
+
   stable-rc_3.16:
     tree: stable-rc
     branch: 'linux-3.16.y'
@@ -952,6 +952,78 @@ build_configs:
     reference:
       tree: stable
       branch: 'linux-5.7.y'
+
+  stable-rc_5.8:
+    tree: stable-rc
+    branch: 'linux-5.8.y'
+    variants: *stable_variants
+    reference:
+      tree: stable
+      branch: 'linux-5.8.y'
+
+  stable-rc_queue-4.4:
+    tree: stable-rc
+    branch: 'queue/4.4'
+    variants: *stable_variants
+    reference:
+      tree: stable
+      branch: 'linux-4.4.y'
+
+  stable-rc_queue-4.9:
+    tree: stable-rc
+    branch: 'queue/4.9'
+    variants: *stable_variants
+    reference:
+      tree: stable
+      branch: 'linux-4.9.y'
+
+  stable-rc_queue-4.14:
+    tree: stable-rc
+    branch: 'queue/4.14'
+    variants: *stable_variants
+    reference:
+      tree: stable
+      branch: 'linux-4.14.y'
+
+  stable-rc_queue-4.19:
+    tree: stable-rc
+    branch: 'queue/4.19'
+    variants: *stable_variants
+    reference:
+      tree: stable
+      branch: 'linux-4.19.y'
+
+  stable-rc_queue-5.4:
+    tree: stable-rc
+    branch: 'queue/5.4'
+    variants: *stable_variants
+    reference:
+      tree: stable
+      branch: 'linux-5.4.y'
+
+  stable-rc_queue-5.6:
+    tree: stable-rc
+    branch: 'queue/5.6'
+    variants: *stable_variants
+    reference:
+      tree: stable
+      branch: 'linux-5.6.y'
+
+  stable-rc_queue-5.7:
+    tree: stable-rc
+    branch: 'queue/5.7'
+    variants: *stable_variants
+    reference:
+      tree: stable
+      branch: 'linux-5.7.y'
+
+  stable-rc_queue-5.8:
+    tree: stable-rc
+    branch: 'queue/5.8'
+    variants: *stable_variants
+    reference:
+      tree: stable
+      branch: 'linux-5.8.y'
 
   tegra:
     tree: tegra
