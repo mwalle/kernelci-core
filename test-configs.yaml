@@ -31,10 +31,6 @@ file_systems:
     type: buildroot
     ramdisk: '{arch}/baseline/rootfs.cpio.gz'
 
-  buildroot_kselftest_ramdisk:
-    type: buildroot
-    ramdisk: '{arch}/tests/rootfs.cpio.gz'
-
   debian_buster_ramdisk:
     type: debian
     ramdisk: 'buster/20200911.0/{arch}/rootfs.cpio.gz'
@@ -43,6 +39,7 @@ file_systems:
     type: debian
     ramdisk: 'buster/20200911.0/{arch}/initrd.cpio.gz'
     nfs: 'buster/20200911.0/{arch}/full.rootfs.tar.xz'
+    root_type: nfs
 
   debian_buster-cros-ec_ramdisk:
     type: debian
@@ -168,11 +165,10 @@ test_plans:
 
   kselftest:
     rootfs: debian_buster_nfs
-    pattern: 'kselftest/{category}-{method}-{protocol}-nfs-kselftest-template.jinja2'
     filters:
       - passlist: {defconfig: ['kselftest']}
     params:
-      job_timeout: '60'
+      job_timeout: '120'
 
   ltp-ipc:
     rootfs: debian_buster-ltp_nfs
@@ -184,8 +180,22 @@ test_plans:
       tst_cmdfiles: "ipc"
       skipfile: skipfile-lkft.yaml
 
+  preempt-rt:
+    rootfs: debian_buster_nfs
+    filters:
+      - passlist: {defconfig: ['preempt_rt']}
+
   sleep:
     rootfs: debian_buster_ramdisk
+    params:
+      sleep_params: mem freeze
+
+  sleep_mem:
+    base_name: sleep
+    rootfs: debian_buster_ramdisk
+    pattern: 'sleep/{category}-{method}-{protocol}-{rootfs}-sleep-template.jinja2'
+    params:
+      sleep_params: mem
 
   usb:
     rootfs: debian_buster_ramdisk
@@ -1608,6 +1618,7 @@ test_configs:
     test_plans:
       - baseline
       - baseline-nfs
+      - kselftest
 
   - device_type: hifive-unleashed-a00
     test_plans:
@@ -1799,6 +1810,7 @@ test_configs:
   - device_type: meson-sm1-khadas-vim3l
     test_plans:
       - baseline
+      - preempt-rt
 
   - device_type: meson-sm1-sei610
     test_plans:
@@ -1812,7 +1824,9 @@ test_configs:
   - device_type: mt8173-elm-hana
     test_plans:
       - baseline
+      - baseline-nfs
       - cros-ec
+      - kselftest
       - sleep
       - v4l2-compliance-uvc
 
@@ -1966,7 +1980,9 @@ test_configs:
   - device_type: rk3399-gru-kevin
     test_plans:
       - baseline
+      - baseline-nfs
       - cros-ec
+      - kselftest
       - ltp-ipc
       - sleep
       - v4l2-compliance-uvc
@@ -1998,6 +2014,7 @@ test_configs:
       - cros-ec
       - igt-kms-rockchip
       - igt-gpu-panfrost
+      - kselftest
       - sleep
       - usb
       - v4l2-compliance-uvc

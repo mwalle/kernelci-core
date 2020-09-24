@@ -142,6 +142,13 @@ fragments:
   kselftest:
     path: "kernel/configs/kselftest.config"
 
+  preempt_rt:
+    path: "kernel/configs/preempt_rt.config"
+    configs:
+      - 'CONFIG_EXPERT=y'
+      - 'CONFIG_PREEMPT_RT=y'
+      - 'CONFIG_PREEMPT_RT_FULL=y' # <= v4.19
+
   tinyconfig:
     path: "kernel/configs/tiny.config"
     defconfig: 'tinyconfig'
@@ -180,9 +187,9 @@ build_environments:
     cross_compile_compat: &default_cross_compile_compat
       arm64: 'arm-linux-gnueabihf-'
 
-  clang-9:
+  clang-10:
     cc: clang
-    cc_version: 9
+    cc_version: 10
     arch_map: &clang_arch_map
       i386:
       x86_64:
@@ -194,9 +201,9 @@ build_environments:
     cross_compile: *default_cross_compile
     cross_compile_compat: *default_cross_compile_compat
 
-  clang-10:
+  clang-11:
     cc: clang
-    cc_version: 10
+    cc_version: 11
     arch_map: *clang_arch_map
     cross_compile: *default_cross_compile
     cross_compile_compat: *default_cross_compile_compat
@@ -299,7 +306,7 @@ arch_defconfigs: &arch_defconfigs
 
 
 minimal_variants: &minimal_variants
-  gcc-8:
+  gcc-8: &gcc_8_minimal
     build_environment: gcc-8
     architectures: *arch_defconfigs
 
@@ -331,6 +338,12 @@ stable_variants: &stable_variants
       x86_64:
         base_defconfig: 'x86_64_defconfig'
         extra_configs: ['allnoconfig']
+
+preempt_rt_variants: &preempt_rt_variants
+  <<: *minimal_variants
+  gcc-8:
+    <<: *gcc_8_minimal
+    fragments: [preempt_rt]
 
 android_variants: &android_variants
   gcc-8:
@@ -745,8 +758,8 @@ build_configs:
               - 'allnoconfig'
               - 'allmodconfig'
 
-      clang-9:
-        build_environment: clang-9
+      clang-10:
+        build_environment: clang-10
         architectures:
           arm64:
             extra_configs:
@@ -769,13 +782,6 @@ build_configs:
             extra_configs:
               - 'allmodconfig'
               - 'allnoconfig'
-
-      clang-10:
-        build_environment: clang-10
-        architectures:
-          arm: *arm_defconfig
-          arm64: *arm64_defconfig
-          x86_64: *x86_64_defconfig
 
   next_pending-fixes:
     tree: next
@@ -821,22 +827,37 @@ build_configs:
   rt-stable_v3.18-rt:
     tree: rt-stable
     branch: 'v3.18-rt'
+    variants: *preempt_rt_variants
 
   rt-stable_v4.1-rt:
     tree: rt-stable
     branch: 'v4.1-rt'
+    variants: *preempt_rt_variants
 
   rt-stable_v4.4-rt:
     tree: rt-stable
     branch: 'v4.4-rt'
+    variants: *preempt_rt_variants
 
   rt-stable_v4.9-rt:
     tree: rt-stable
     branch: 'v4.9-rt'
+    variants: *preempt_rt_variants
 
   rt-stable_v4.14-rt:
     tree: rt-stable
     branch: 'v4.14-rt'
+    variants: *preempt_rt_variants
+
+  rt-stable_v4.19-rt:
+    tree: rt-stable
+    branch: 'v4.19-rt'
+    variants: *preempt_rt_variants
+
+  rt-stable_v5.4-rt:
+    tree: rt-stable
+    branch: 'v5.4-rt'
+    variants: *preempt_rt_variants
 
   samsung:
     tree: samsung
@@ -847,12 +868,9 @@ build_configs:
     branch: 'stable-next'
     variants: *stable_variants
 
-#  Disabled as the branch name contains a '/'.  See discussion here:
-#  https://github.com/kernelci/kernelci-core/issues/23
-#
-#  soc_fixes:
-#    tree: soc
-#    branch: 'arm/fixes'
+  soc_fixes:
+    tree: soc
+    branch: 'arm/fixes'
 
   soc_for-next:
     tree: soc
