@@ -987,7 +987,21 @@ build_configs:
   stable_5.8:
     tree: stable
     branch: 'linux-5.8.y'
-    variants: *stable_variants
+    variants:
+      gcc-8:
+        build_environment: gcc-8
+        fragments: [kselftest]
+        architectures:
+          arm: *arm_defconfig
+          arm64: *arm64_defconfig
+          x86_64: *x86_64_defconfig
+      clang-11:
+        build_environment: clang-11
+        fragments: [kselftest]
+        architectures:
+          arm: *arm_defconfig
+          arm64: *arm64_defconfig
+          x86_64: *x86_64_defconfig
 
   stable-rc_3.16:
     tree: stable-rc
