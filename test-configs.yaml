@@ -686,6 +686,11 @@ device_types:
     dtb: 'freescale/imx8mp-evk.dtb'
     boot_method: uboot
 
+  imx8mq-zii-ultra-zest:
+    mach: imx
+    class: arm64-dtb
+    boot_method: barebox
+
   jetson-tk1:
     mach: tegra
     class: arm-dtb
@@ -1746,6 +1751,12 @@ test_configs:
   - device_type: imx8mm-ddr4-evk
     test_plans:
       - baseline
+
+  - device_type: imx8mq-zii-ultra-zest
+    test_plans:
+      - baseline
+      - baseline-nfs
+      - kselftest
 
   - device_type: imx8mn-ddr4-evk
     test_plans:
