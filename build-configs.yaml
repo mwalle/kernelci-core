@@ -781,7 +781,9 @@ build_configs:
         fragments: *default_fragments
         architectures:
           i386: *i386_arch
-          x86_64: *x86_64_arch
+          x86_64:
+            <<: *x86_64_arch
+            fragments: [x86_chromebook]
           mips: *mips_arch
           riscv: *riscv_arch
           arc: *arc_arch
