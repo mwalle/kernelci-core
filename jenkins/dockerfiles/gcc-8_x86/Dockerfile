@@ -12,4 +12,5 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
    libcap-dev \
    libcap-ng-dev \
    libelf-dev \
-   libpopt-dev
+   libpopt-dev \
+   gcc-multilib
