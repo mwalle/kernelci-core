@@ -11,5 +11,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
    libc6-dev \
    libcap-dev \
    libcap-ng-dev \
+   libdrm-dev \
    libelf-dev \
+   libfuse-dev \
    libpopt-dev
