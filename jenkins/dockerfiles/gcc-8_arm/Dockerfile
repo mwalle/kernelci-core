@@ -19,5 +19,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
    libc6-dev:armhf \
    libcap-dev:armhf \
    libcap-ng-dev:armhf \
+   libdrm-dev:armhf \
    libelf-dev:armhf \
+   libfuse-dev:armhf \
    libpopt-dev:armhf

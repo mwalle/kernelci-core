@@ -30,5 +30,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
    libc6-dev:arm64 \
    libcap-dev:arm64 \
    libcap-ng-dev:arm64 \
+   libdrm-dev:arm64 \
    libelf-dev:arm64 \
+   libfuse-dev:arm64 \
    libpopt-dev:arm64
