@@ -2079,6 +2079,7 @@ test_configs:
       - igt-kms-rockchip
       - igt-gpu-panfrost
       - kselftest
+      - ltp-ipc
       - sleep
       - usb
       - v4l2-compliance-uvc
