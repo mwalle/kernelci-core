@@ -31,4 +31,5 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
    libcap-dev:arm64 \
    libcap-ng-dev:arm64 \
    libelf-dev:arm64 \
+   libnuma-dev:arm64 \
    libpopt-dev:arm64
