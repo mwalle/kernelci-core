@@ -439,7 +439,7 @@ def _output_to_file(cmd, log_file, rel_dir=None):
 
 def _run_make(kdir, arch, target=None, jopt=None, silent=True, cc='gcc',
               cross_compile=None, use_ccache=None, output=None, log_file=None,
-              opts=None, cross_compile_compat=None):
+              opts=None, cross_compile_compat=None, kselftest_kdir=None):
     args = ['make']
 
     if opts:
@@ -474,7 +474,9 @@ def _run_make(kdir, arch, target=None, jopt=None, silent=True, cc='gcc',
     elif cc != 'gcc':
         args.append('CC={}'.format(cc))
 
-    if output:
+    if kselftest_kdir:
+        args.append('O={}'.format(os.path.abspath(kselftest_kdir)))
+    elif output:
         # due to kselftest Makefile issues, O= cannot be a relative path
         args.append('O={}'.format(os.path.abspath(output)))
 
@@ -669,6 +671,7 @@ def build_kernel(build_env, kdir, arch, defconfig=None, jopt=None,
         # 'make -C tools/testing/selftests install'
         #
         kwargs.update({
+            'kselftest_kdir': kdir,
             'kdir': os.path.join(kdir, 'tools/testing/selftests')
         })
         opts.update({
