@@ -173,6 +173,10 @@ fragments:
     configs:
       - 'CONFIG_SERIAL_8250_DW=y'
       - 'CONFIG_X86_AMD_PLATFORM_DEVICE=y'
+      - 'CONFIG_MFD_INTEL_LPSS_PCI=y'
+      - 'CONFIG_USB_GADGET=y'
+      - 'CONFIG_USB_ETH=y'
+      - 'CONFIG_USB_RTL8152=y'
 
   x86_kvm_guest:
     path: "kernel/configs/kvm_guest.config"
@@ -746,7 +750,9 @@ build_configs:
         fragments: *default_fragments
         architectures:
           i386: *i386_arch
-          x86_64: *x86_64_arch
+          x86_64:
+            <<: *x86_64_arch
+            fragments: [x86_chromebook]
           mips: *mips_arch
           riscv: *riscv_arch
           arc: *arc_arch
