@@ -204,7 +204,11 @@ build_environments:
       arm64: *arm64_params
       i386: *i386_params
       mips: *mips_params
-      riscv: *riscv_params
+      riscv:
+        <<: *riscv_params
+        opts:
+          LLVM_IAS: '1'
+          LD: 'riscv64-linux-gnu-ld'
       x86_64: *x86_64_params
 
   clang-11:
@@ -296,6 +300,10 @@ arch_clang_configs: &arch_clang_configs
       - 'multi_v5_defconfig'
       - 'allmodconfig'
       - 'allnoconfig'
+  riscv:
+    extra_configs:
+      - 'allnoconfig'
+      - 'defconfig+CONFIG_EFI=n'
   x86_64:
     base_defconfig: 'x86_64_defconfig'
     extra_configs:
