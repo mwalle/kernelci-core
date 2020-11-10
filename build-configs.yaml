@@ -217,6 +217,9 @@ build_environments:
       riscv:
         <<: *riscv_params
         name:
+        opts:
+          LLVM_IAS: '1'
+          LD: 'riscv64-linux-gnu-ld'
       x86_64:
         <<: *x86_64_params
         name:
@@ -310,6 +313,10 @@ arch_clang_configs: &arch_clang_configs
       - 'multi_v5_defconfig'
       - 'allmodconfig'
       - 'allnoconfig'
+  riscv:
+    extra_configs:
+      - 'allnoconfig'
+      - 'defconfig+CONFIG_EFI=n'
   x86_64:
     base_defconfig: 'x86_64_defconfig'
     extra_configs:
