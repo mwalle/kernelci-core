@@ -305,6 +305,9 @@ arch_clang_configs: &arch_clang_configs
       - 'multi_v5_defconfig'
       - 'allmodconfig'
       - 'allnoconfig'
+  riscv:
+    extra_configs:
+      - 'allnoconfig'
   x86_64:
     base_defconfig: 'x86_64_defconfig'
     extra_configs:
