@@ -97,22 +97,7 @@ test_plans:
     rootfs: debian_buster_nfs
     pattern: 'baseline/{category}-{method}-{protocol}-nfs-baseline-template.jinja2'
     filters:
-      - combination:
-          keys: ['arch', 'defconfig']
-          values:
-            - ['arm', 'exynos_defconfig']
-            - ['arm', 'omap2plus_defconfig']
-            - ['arm', 'sunxi_defconfig']
-            - ['arm', 'hisi_defconfig']
-            - ['arm', 'sama5_defconfig']
-            - ['arm', 'tegra_defconfig']
-            - ['arm', 'mvebu_v5_defconfig']
-            - ['arm', 'multi_v5_defconfig']
-            - ['arm', 'multi_v7_defconfig']
-            - ['arm', 'mvebu_v7_defconfig']
-            - ['arm', 'at91_dt_defconfig']
-            - ['arm', 'davinci_all_defconfig']
-            - ['arm64', 'defconfig']
+      - blocklist: *kselftest_defconfig_filter
 
   cros-ec:
     rootfs: debian_buster-cros-ec_ramdisk
@@ -510,6 +495,13 @@ device_types:
           kernel: ['v4.', 'v5.1', 'v5.2']
 
   hp-11A-G6-EE-grunt:
+    mach: x86
+    arch: x86_64
+    boot_method: depthcharge
+    filters:
+      - passlist: {defconfig: ['x86-chromebook']}
+
+  hp-x360-12b-ca0004na-octopus:
     mach: x86
     arch: x86_64
     boot_method: depthcharge
@@ -1654,6 +1646,13 @@ test_configs:
       - baseline
 
   - device_type: hp-11A-G6-EE-grunt
+    test_plans:
+      - baseline
+      - baseline-nfs
+      - cros-ec
+      - sleep
+
+  - device_type: hp-x360-12b-ca0004na-octopus
     test_plans:
       - baseline
       - baseline-nfs
